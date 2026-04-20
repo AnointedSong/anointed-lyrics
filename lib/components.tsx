@@ -16,6 +16,8 @@ export const font = {
   mono: "'JetBrains Mono','Menlo',monospace",
 };
 
+const YEAR = new Date().getFullYear();
+
 export function AppShell({ children, user, credits, onSignOut }: {
   children: React.ReactNode; user: any; credits: number; onSignOut: () => void;
 }) {
@@ -23,7 +25,7 @@ export function AppShell({ children, user, credits, onSignOut }: {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.fg, fontFamily: font.body }}>
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.fg, fontFamily: font.body, display: "flex", flexDirection: "column" }}>
       <header style={{ borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ maxWidth: 1060, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/generator" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: C.fg }}>
@@ -74,15 +76,80 @@ export function AppShell({ children, user, credits, onSignOut }: {
         </div>
       </header>
 
-      <main>{children}</main>
+      <main style={{ flex: 1 }}>{children}</main>
 
-      <footer style={{ borderTop: `1px solid ${C.border}`, marginTop: 80 }}>
-        <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 24px", display: "flex", justifyContent: "space-between", fontSize: 12, color: C.muted }}>
-          <span style={{ fontFamily: font.display, fontStyle: "italic" }}>Crafted for songwriters.</span>
-          <span style={{ fontFamily: font.mono, fontSize: 11 }}>v2.0</span>
-        </div>
-      </footer>
+      <AppFooter />
     </div>
+  );
+}
+
+export function AppFooter() {
+  return (
+    <footer style={{ borderTop: `1px solid ${C.border}`, background: C.bg, marginTop: "auto" }}>
+      <div style={{ maxWidth: 1060, margin: "0 auto", padding: "32px 24px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+          {/* Brand */}
+          <div>
+            <div style={{ fontFamily: font.display, fontSize: 16, letterSpacing: "-0.01em" }}>
+              AnointedLyrics<span style={{ color: C.gold }}>.</span>
+            </div>
+            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>
+              © {YEAR} AnointedLyrics. All rights reserved.
+            </div>
+          </div>
+
+          {/* Legal links */}
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {[
+              ["/terms", "Terms & Conditions"],
+              ["/privacy", "Privacy Policy"],
+              ["/refunds", "Refund Policy"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href}
+                style={{ fontSize: 12, color: C.muted, textDecoration: "none" }}
+                onMouseEnter={(e: any) => e.target.style.color = C.fg}
+                onMouseLeave={(e: any) => e.target.style.color = C.muted}>
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* Public footer for landing/legal pages */
+export function PublicFooter() {
+  return (
+    <footer style={{ borderTop: `1px solid ${C.border}`, background: C.bg }}>
+      <div style={{ maxWidth: 1060, margin: "0 auto", padding: "32px 24px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+          <div>
+            <div style={{ fontFamily: font.display, fontSize: 16 }}>
+              AnointedLyrics<span style={{ color: C.gold }}>.</span>
+            </div>
+            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>
+              © {YEAR} AnointedLyrics. All rights reserved.
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {[
+              ["/terms", "Terms & Conditions"],
+              ["/privacy", "Privacy Policy"],
+              ["/refunds", "Refund Policy"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href}
+                style={{ fontSize: 12, color: C.muted, textDecoration: "none" }}
+                onMouseEnter={(e: any) => e.target.style.color = C.fg}
+                onMouseLeave={(e: any) => e.target.style.color = C.muted}>
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -90,7 +157,7 @@ export function AppShell({ children, user, credits, onSignOut }: {
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted }}>{label}</label>
+      <label style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, fontFamily: font.body }}>{label}</label>
       <div style={{ marginTop: 10 }}>{children}</div>
     </div>
   );
@@ -150,4 +217,34 @@ export function SmBtn({ onClick, disabled, dark, children }: any) {
       border: dark ? "none" : `1px solid ${C.border}`, borderRadius: 4, cursor: disabled ? "not-allowed" : "pointer", fontWeight: 500, opacity: disabled ? 0.5 : 1 }}>
     {children}
   </button>;
+}
+
+export function LegalLayout({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: font.body, display: "flex", flexDirection: "column" }}>
+      {/* Public header */}
+      <header style={{ borderBottom: `1px solid ${C.border}`, background: C.bg }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: C.fg }}>
+            <div style={{ width: 34, height: 34, borderRadius: 6, background: C.fg, color: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>♪</div>
+            <div style={{ fontFamily: font.display, fontSize: 18, letterSpacing: "-0.01em" }}>AnointedLyrics<span style={{ color: C.gold }}>.</span></div>
+          </Link>
+          <Link href="/login" style={{ fontSize: 13, color: C.muted, textDecoration: "none" }}>Sign In →</Link>
+        </div>
+      </header>
+
+      <main style={{ flex: 1 }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "64px 24px 80px" }}>
+          <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.muted, marginBottom: 16 }}>
+            <span style={{ color: C.gold }}>●</span> &nbsp;Legal
+          </div>
+          <h1 style={{ fontFamily: font.display, fontSize: "clamp(32px,4vw,48px)", fontWeight: 400, letterSpacing: "-0.02em", marginBottom: 8 }}>{title}</h1>
+          <p style={{ fontSize: 13, color: C.muted, marginBottom: 48 }}>Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</p>
+          <div style={{ fontSize: 15, lineHeight: 1.8, color: C.fgSoft }}>{children}</div>
+        </div>
+      </main>
+
+      <PublicFooter />
+    </div>
+  );
 }
