@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
+import { checkRateLimit } from '@/lib/ratelimit';
+import { GenerateSchema, sanitizeText } from '@/lib/validation';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -49,20 +51,59 @@ const STRUCT_GUIDE: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
+  // 1. Auth check
   const user = await verifyUser(req);
-  if (!user) return NextResponse.json({ error: 'Auth required' }, { status: 401 });
+  if (!user) {
+    return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+  }
 
+  // 2. Rate limit — 5 generations per 60 seconds per user
+  const { allowed, remaining, reset } = await checkRateLimit(user.id);
+  if (!allowed) {
+    const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+    return NextResponse.json(
+      { error: `Too many requests. Please wait ${retryAfter} seconds before generating again.` },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(retryAfter),
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    );
+  }
+
+  // 3. Parse and validate input
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+  }
+
+  const parsed = GenerateSchema.safeParse(body.formData);
+  if (!parsed.success) {
+    const firstError = parsed.error.errors[0]?.message || 'Invalid input';
+    return NextResponse.json({ error: firstError }, { status: 400 });
+  }
+
+  const formData = parsed.data;
+
+  // 4. Sanitize free-text fields
+  formData.topic = sanitizeText(formData.topic);
+  formData.title = sanitizeText(formData.title || '');
+  formData.notes = sanitizeText(formData.notes || '');
+
+  // 5. Credit check
   const db = adminDb();
-
-  // Check credits
   const { data: balance } = await db.rpc('get_user_balance', { uid: user.id });
-  if ((balance || 0) <= 0) return NextResponse.json({ error: 'NO_CREDITS' }, { status: 403 });
+  if ((balance || 0) <= 0) {
+    return NextResponse.json({ error: 'NO_CREDITS' }, { status: 403 });
+  }
 
-  const { formData } = await req.json();
-  if (!formData?.topic?.trim()) return NextResponse.json({ error: 'Concept required' }, { status: 400 });
-
-  const gi = GENRE_INSTRUMENTS[formData.genre] || '';
-  const sg = STRUCT_GUIDE[formData.structure] || formData.structure;
+  // 6. Build prompt and call Claude
+  const gi = GENRE_INSTRUMENTS[formData.genre || ''] || '';
+  const sg = STRUCT_GUIDE[formData.structure || 'Standard'] || STRUCT_GUIDE.Standard;
 
   const prompt = `You are a world-class songwriter specializing in global music, especially African genres. Generate complete, original Suno-ready lyrics.
 
@@ -71,10 +112,10 @@ SONG BRIEF:
 - Concept: ${formData.topic}
 - Genre: ${formData.genre || "AI Decides"}
 - Mood: ${formData.mood || "AI Decides"}
-- Language: ${formData.language || "English"}
+- Language: ${formData.language}
 - Vocalist: ${formData.vocalist || "AI Decides"}
-- Structure: ${formData.structure || "Standard"} → ${sg}
-- Tempo: ${formData.tempo || "AI Decides"}
+- Structure: ${formData.structure} → ${sg}
+- Tempo: ${formData.tempo}
 ${gi ? `- Instruments: ${gi}` : ''}
 ${formData.notes ? `- Special Notes: ${formData.notes}` : ''}
 
@@ -97,18 +138,32 @@ Return strict JSON: { "title": string, "lyrics": string, "style_prompt": string 
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const text = msg.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map(b => b.text).join('');
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    const text = msg.content
+      .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+      .map(b => b.text)
+      .join('');
 
-    // Deduct credit
-    await db.from('credit_transactions').insert({ user_id: user.id, amount: -1, reason: 'generation' });
+    const result = JSON.parse(text.replace(/```json|```/g, '').trim());
 
-    // Get new balance
+    // 7. Deduct credit AFTER successful generation
+    await db.from('credit_transactions').insert({
+      user_id: user.id,
+      amount: -1,
+      reason: 'generation',
+    });
+
     const { data: newBal } = await db.rpc('get_user_balance', { uid: user.id });
 
-    return NextResponse.json({ ...parsed, credits: newBal || 0 });
+    return NextResponse.json({
+      title: result.title,
+      lyrics: result.lyrics,
+      style_prompt: result.style_prompt,
+      credits: newBal || 0,
+      rateLimit: { remaining },
+    });
+
   } catch (e: any) {
     console.error('Generate error:', e);
-    return NextResponse.json({ error: 'Generation failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Generation failed. Please try again.' }, { status: 500 });
   }
 }
