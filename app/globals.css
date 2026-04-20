@@ -1,0 +1,9 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+::selection { background: #F6EDCE; color: #1C1B18; }
+body { font-family: 'DM Sans', 'Helvetica Neue', sans-serif; background: #FAF9F7; color: #1C1B18; }
+input, select, textarea, button { font-family: 'DM Sans', 'Helvetica Neue', sans-serif; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E5E3DD; border-radius: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
