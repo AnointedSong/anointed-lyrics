@@ -9,8 +9,10 @@ export default function DashboardPage() {
   const { user, loading, getToken, signOut } = useAuth();
   const [credits, setCredits] = useState(0);
   const [dataLoading, setDataLoading] = useState(true);
-  const [buying, setBuying] = useState(false);
+  const [buying, setBuying] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Songwriter';
 
   useEffect(() => {
     if (!loading && !user) { router.push('/login'); return; }
@@ -18,7 +20,7 @@ export default function DashboardPage() {
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
-      setSuccessMsg('Credits purchased successfully!');
+      setSuccessMsg('Credits purchased successfully! They will appear in your account shortly.');
       window.history.replaceState({}, '', '/dashboard');
     }
 
@@ -31,22 +33,25 @@ export default function DashboardPage() {
     })();
   }, [user, loading]);
 
-  const buyCredits = async (priceId: string) => {
-    setBuying(true);
-    const token = await getToken();
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ priceId }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-    else { alert('Checkout failed'); setBuying(false); }
+  const buyCredits = async (priceId: string, packName: string) => {
+    setBuying(packName);
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { alert('Checkout failed. Please try again.'); setBuying(null); }
+    } catch (e) {
+      alert('Checkout error. Please try again.');
+      setBuying(null);
+    }
   };
 
   const handleSignOut = async () => { await signOut(); router.push('/login'); };
-
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Songwriter';
 
   if (loading || dataLoading) return (
     <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -54,9 +59,40 @@ export default function DashboardPage() {
     </div>
   );
 
+  const packs = [
+    {
+      name: "Starter",
+      credits: 100,
+      price: "$4.99",
+      perCredit: "$0.05/song",
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_100 || '',
+      desc: "Perfect for trying out",
+      popular: false,
+    },
+    {
+      name: "Creator",
+      credits: 250,
+      price: "$10.99",
+      perCredit: "$0.044/song",
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_250 || '',
+      desc: "Best value — beats the competition",
+      popular: true,
+    },
+    {
+      name: "Pro",
+      credits: 500,
+      price: "$18.99",
+      perCredit: "$0.038/song",
+      priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_500 || '',
+      desc: "For serious songwriters",
+      popular: false,
+    },
+  ];
+
   return (
     <AppShell user={user} credits={credits} onSignOut={handleSignOut}>
-      <div className="al-container" style={{ padding: "2.5rem 1rem 4rem" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "2.5rem 1rem 4rem" }}>
+
         {/* Welcome */}
         <div style={{ marginBottom: "2rem" }}>
           <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.muted, marginBottom: 10 }}>
@@ -67,61 +103,89 @@ export default function DashboardPage() {
           </h1>
         </div>
 
+        {/* Success message */}
         {successMsg && (
-          <div style={{ background: "#1a2a1a", border: "1px solid #2a4a2a", borderRadius: 8, padding: "12px 16px", marginBottom: 20, color: "#6bff6b", fontSize: 14 }}>✓ {successMsg}</div>
+          <div style={{ background: "#1a2a1a", border: "1px solid #2a4a2a", borderRadius: 8, padding: "12px 16px", marginBottom: 24, color: "#6bff6b", fontSize: 14 }}>
+            ✓ {successMsg}
+          </div>
         )}
 
         {/* Stats */}
-        <div className="al-grid-stats" style={{ marginBottom: "1.5rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "1.25rem" }}>
-            <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: 8 }}>Credits</div>
+            <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: 8 }}>Credits Remaining</div>
             <div style={{ fontFamily: font.display, fontSize: "clamp(28px,6vw,36px)", fontWeight: 500, color: C.gold }}>{credits} ✦</div>
           </div>
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "1.25rem" }}>
             <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: 8 }}>Account</div>
-            <div style={{ fontSize: 14, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{firstName}</div>
+            <div style={{ fontSize: 15, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{firstName}</div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>3 free credits on signup</div>
           </div>
         </div>
 
         {/* Quick actions */}
-        <div className="al-action-cards" style={{ marginBottom: "2rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
           <button onClick={() => router.push('/generator')}
             style={{ background: C.fg, border: "none", borderRadius: 8, padding: "1.5rem 1rem", cursor: "pointer", textAlign: "left", color: C.bg, fontFamily: font.body }}>
             <div style={{ fontSize: 22, marginBottom: 10 }}>✦</div>
-            <div style={{ fontFamily: font.display, fontSize: "clamp(16px,4vw,18px)", fontWeight: 500 }}>Create Song</div>
+            <div style={{ fontFamily: font.display, fontSize: "clamp(15px,3vw,18px)", fontWeight: 500 }}>Create Song</div>
             <div style={{ fontSize: 13, opacity: 0.7, marginTop: 4 }}>Generate Suno-ready lyrics</div>
           </button>
           <button onClick={() => router.push('/archive')}
             style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "1.5rem 1rem", cursor: "pointer", textAlign: "left", color: C.fg, fontFamily: font.body }}>
             <div style={{ fontSize: 22, marginBottom: 10 }}>📜</div>
-            <div style={{ fontFamily: font.display, fontSize: "clamp(16px,4vw,18px)", fontWeight: 500 }}>View Archive</div>
+            <div style={{ fontFamily: font.display, fontSize: "clamp(15px,3vw,18px)", fontWeight: 500 }}>View Archive</div>
             <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>Your saved songs</div>
           </button>
         </div>
 
-        {/* Buy credits */}
+        {/* Credit packs */}
         <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "1.5rem" }}>
           <h2 style={{ fontFamily: font.display, fontSize: "clamp(18px,4vw,22px)", fontWeight: 400, marginBottom: 6 }}>Buy Credits</h2>
-          <p style={{ fontSize: 14, color: C.muted, marginBottom: 20, lineHeight: 1.5 }}>Each credit generates one complete song with lyrics and style prompt.</p>
+          <p style={{ fontSize: 14, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+            Each credit generates one complete song with lyrics and Suno style prompt.
+          </p>
 
-          <div className="al-grid-3">
-            {[
-              { n: 50, price: "$9.99", per: "$0.20/song", id: process.env.NEXT_PUBLIC_STRIPE_PRICE_50 || '' },
-              { n: 150, price: "$17.99", per: "$0.12/song", id: process.env.NEXT_PUBLIC_STRIPE_PRICE_150 || '', popular: true },
-              { n: 300, price: "$29.99", per: "$0.10/song", id: process.env.NEXT_PUBLIC_STRIPE_PRICE_300 || '' },
-            ].map(p => (
-              <button key={p.n} onClick={() => buyCredits(p.id)} disabled={buying}
-                style={{ background: C.inputBg, border: `1.5px solid ${p.popular ? C.gold : C.border}`, borderRadius: 8, padding: "1.25rem 0.75rem", cursor: buying ? "not-allowed" : "pointer", textAlign: "center", position: "relative", color: C.fg, fontFamily: font.body, width: "100%" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+            {packs.map(p => (
+              <div key={p.name} style={{ position: "relative" }}>
                 {p.popular && (
-                  <span style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: C.gold, color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 10px", borderRadius: 10, textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>Popular</span>
+                  <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: C.gold, color: "#fff", fontSize: 10, fontWeight: 700, padding: "3px 12px", borderRadius: 10, textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap", zIndex: 1 }}>
+                    Best Value
+                  </div>
                 )}
-                <div style={{ fontFamily: font.display, fontSize: "clamp(16px,3vw,18px)", fontWeight: 500 }}>{p.n} Credits</div>
-                <div style={{ fontSize: "clamp(18px,4vw,22px)", fontWeight: 700, margin: "6px 0" }}>{p.price}</div>
-                <div style={{ fontSize: 11, color: C.muted }}>{p.per}</div>
-              </button>
+                <button
+                  onClick={() => buyCredits(p.priceId, p.name)}
+                  disabled={buying !== null}
+                  style={{
+                    width: "100%", background: p.popular ? C.fg : C.inputBg,
+                    border: `2px solid ${p.popular ? C.fg : C.border}`,
+                    borderRadius: 8, padding: "1.5rem 1rem", cursor: buying ? "not-allowed" : "pointer",
+                    textAlign: "center", color: p.popular ? C.bg : C.fg,
+                    fontFamily: font.body, transition: "all .2s",
+                    opacity: buying && buying !== p.name ? 0.6 : 1,
+                  }}>
+                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.7, marginBottom: 8 }}>{p.name}</div>
+                  <div style={{ fontFamily: font.display, fontSize: "clamp(18px,4vw,22px)", fontWeight: 500 }}>{p.credits} Credits</div>
+                  <div style={{ fontSize: "clamp(22px,5vw,28px)", fontWeight: 700, margin: "8px 0" }}>{p.price}</div>
+                  <div style={{ fontSize: 12, opacity: 0.65, marginBottom: 12 }}>{p.perCredit}</div>
+                  <div style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{p.desc}</div>
+                  <div style={{ marginTop: 16, padding: "8px 0", background: p.popular ? "rgba(255,255,255,.15)" : C.gold + "22", borderRadius: 6, fontSize: 13, fontWeight: 600, color: p.popular ? C.bg : C.goldDark }}>
+                    {buying === p.name ? "Redirecting…" : "Buy Now"}
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 11, color: C.muted, marginTop: 16 }}>Secure payment via Stripe · Card & PayPal</p>
+
+          {/* Comparison callout */}
+          <div style={{ marginTop: 20, padding: "12px 16px", background: C.goldLight, borderRadius: 6, fontSize: 13, color: C.goldDark, textAlign: "center" }}>
+            💡 250 credits for $10.99 — cheaper than SongGhost's $12.00 for the same amount
+          </div>
+
+          <p style={{ textAlign: "center", fontSize: 11, color: C.muted, marginTop: 16 }}>
+            Secure payment via Stripe · Card & PayPal accepted
+          </p>
         </div>
       </div>
     </AppShell>

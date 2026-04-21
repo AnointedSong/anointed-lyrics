@@ -9,9 +9,9 @@ function adminDb() {
 }
 
 const CREDIT_PACKS: Record<string, number> = {
-  [process.env.STRIPE_PRICE_50 || '']: 50,
-  [process.env.STRIPE_PRICE_150 || '']: 150,
-  [process.env.STRIPE_PRICE_300 || '']: 300,
+  [process.env.STRIPE_PRICE_100 || '']: 100,
+  [process.env.STRIPE_PRICE_250 || '']: 250,
+  [process.env.STRIPE_PRICE_500 || '']: 500,
 };
 
 export async function POST(req: NextRequest) {
