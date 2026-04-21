@@ -22,7 +22,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https:",
-      "connect-src 'self' https://*.supabase.co https://api.anthropic.com https://api.stripe.com",
+      "connect-src 'self' https://anointedlyrics.com https://www.anointedlyrics.com https://*.supabase.co https://api.anthropic.com https://api.stripe.com",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
     ].join('; '),
   },
