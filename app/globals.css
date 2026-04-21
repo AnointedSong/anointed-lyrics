@@ -1,9 +1,190 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 ::selection { background: #F6EDCE; color: #1C1B18; }
-body { font-family: 'DM Sans', 'Helvetica Neue', sans-serif; background: #FAF9F7; color: #1C1B18; }
-input, select, textarea, button { font-family: 'DM Sans', 'Helvetica Neue', sans-serif; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  background: #FAF9F7;
+  color: #1C1B18;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+input, select, textarea, button {
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #E5E3DD; border-radius: 3px; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Responsive containers ── */
+.al-container {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.al-container-md {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .al-container, .al-container-md { padding: 0 1.5rem; }
+}
+
+/* ── Responsive grids ── */
+.al-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.al-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.al-grid-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 600px) {
+  .al-grid-2 { grid-template-columns: 1fr 1fr; }
+  .al-grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Header nav ── */
+.al-nav-links {
+  display: none;
+}
+
+.al-nav-links.open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #FAF9F7;
+  border-bottom: 1px solid #E5E3DD;
+  padding: 0.5rem 0;
+  z-index: 99;
+}
+
+.al-nav-links.open a,
+.al-nav-links.open button {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #F0EDE8;
+}
+
+@media (min-width: 768px) {
+  .al-nav-links {
+    display: flex !important;
+    flex-direction: row;
+    position: static;
+    border: none;
+    padding: 0;
+    background: transparent;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .al-hamburger { display: none !important; }
+}
+
+/* ── Toggle grid ── */
+.al-toggle-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .al-toggle-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Result actions ── */
+.al-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ── Footer links ── */
+.al-footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.al-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .al-footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* ── Legal page ── */
+.al-legal-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #1C1B18;
+  margin-bottom: 0.75rem;
+}
+
+.al-legal-content p,
+.al-legal-content li {
+  color: rgba(28,27,24,.78);
+  line-height: 1.8;
+  font-size: 0.9375rem;
+}
+
+.al-legal-content ul {
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.al-legal-content ul li {
+  margin-bottom: 0.25rem;
+}
+
+/* ── Dashboard action cards ── */
+.al-action-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 400px) {
+  .al-action-cards { grid-template-columns: 1fr; }
+}

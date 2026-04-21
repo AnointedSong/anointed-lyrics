@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/useAuth';
-import { C, font, PillBtn } from '@/lib/components';
+import { C, font, PillBtn, PublicFooter } from '@/lib/components';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -35,67 +35,90 @@ export default function LoginPage() {
     } catch (e: any) { setError(e.message); setBusy(false); }
   };
 
-  if (loading) return <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}><p style={{ color: C.muted }}>Loading…</p></div>;
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ color: C.muted }}>Loading…</p>
+    </div>
+  );
+
+  const inputStyle = {
+    width: "100%", padding: "0.75rem 0.875rem",
+    border: `1px solid ${C.border}`, borderRadius: 6,
+    fontSize: "1rem", background: C.inputBg, outline: "none",
+    fontFamily: font.body, color: C.fg,
+    WebkitAppearance: "none" as any,
+  };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: C.bg, fontFamily: font.body }}>
-      <div style={{ width: "100%", maxWidth: 400 }}>
-        <Link href="/" style={{ color: C.muted, fontSize: 13, textDecoration: "none", letterSpacing: "0.1em", display: "block", marginBottom: 32 }}>← Back</Link>
-
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{ fontFamily: font.display, fontSize: 32, letterSpacing: "-0.02em" }}>AnointedLyrics<span style={{ color: C.gold }}>.</span></div>
-          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, marginTop: 6 }}>
-            {mode === 'login' ? 'Sign in to continue' : 'Create your account'}
-          </div>
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: font.body, display: "flex", flexDirection: "column" }}>
+      <header style={{ borderBottom: `1px solid ${C.border}` }}>
+        <div className="al-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 1rem" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: C.fg }}>
+            <div style={{ width: 32, height: 32, borderRadius: 6, background: C.fg, color: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>♪</div>
+            <div style={{ fontFamily: font.display, fontSize: 16 }}>AnointedLyrics<span style={{ color: C.gold }}>.</span></div>
+          </Link>
         </div>
+      </header>
 
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 32 }}>
-          <button onClick={handleGoogle} disabled={busy}
-            style={{ width: "100%", padding: "12px 20px", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 14, cursor: "pointer", fontWeight: 500, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: C.fg }}>
-            <span style={{ fontSize: 18 }}>G</span> Continue with Google
-          </button>
-
-          <div style={{ textAlign: "center", color: C.muted, fontSize: 12, margin: "20px 0", position: "relative" }}>
-            <span style={{ background: C.card, padding: "0 12px", position: "relative", zIndex: 1 }}>or</span>
-            <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: 1, background: C.border }} />
-          </div>
-
-          {error && <div style={{ color: C.danger, fontSize: 13, marginBottom: 12 }}>{error}</div>}
-
-          {mode === 'signup' && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Name</label>
-              <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name"
-                style={{ width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 14, background: C.inputBg, outline: "none" }} />
+      <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem 1rem" }}>
+        <div style={{ width: "100%", maxWidth: 400 }}>
+          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+            <h1 style={{ fontFamily: font.display, fontSize: "clamp(24px,5vw,32px)", letterSpacing: "-0.02em", marginBottom: 8 }}>
+              AnointedLyrics<span style={{ color: C.gold }}>.</span>
+            </h1>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted }}>
+              {mode === 'login' ? 'Sign in to continue' : 'Create your account'}
             </div>
-          )}
-
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Email</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com" type="email"
-              onKeyDown={e => e.key === 'Enter' && handleEmail()}
-              style={{ width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 14, background: C.inputBg, outline: "none" }} />
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Password</label>
-            <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="••••••••"
-              onKeyDown={e => e.key === 'Enter' && handleEmail()}
-              style={{ width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: 14, background: C.inputBg, outline: "none" }} />
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "1.5rem" }}>
+            {/* Google */}
+            <button onClick={handleGoogle} disabled={busy}
+              style={{ width: "100%", padding: "0.875rem 1.25rem", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, fontSize: "0.9375rem", cursor: "pointer", fontWeight: 500, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: C.fg, fontFamily: font.body }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>G</span> Continue with Google
+            </button>
+
+            <div style={{ textAlign: "center", color: C.muted, fontSize: 12, margin: "16px 0", position: "relative" }}>
+              <span style={{ background: C.card, padding: "0 12px", position: "relative", zIndex: 1 }}>or</span>
+              <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: 1, background: C.border }} />
+            </div>
+
+            {error && <div style={{ color: C.danger, fontSize: 13, marginBottom: 12, padding: "8px 12px", background: "#fff0f0", borderRadius: 6 }}>{error}</div>}
+
+            {mode === 'signup' && (
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Name</label>
+                <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" style={inputStyle} />
+              </div>
+            )}
+
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Email</label>
+              <input value={email} onChange={e => setEmail(e.target.value)} placeholder="you@email.com" type="email"
+                onKeyDown={e => e.key === 'Enter' && handleEmail()} style={inputStyle} />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, display: "block", marginBottom: 6 }}>Password</label>
+              <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="••••••••"
+                onKeyDown={e => e.key === 'Enter' && handleEmail()} style={inputStyle} />
+            </div>
+
+            <PillBtn onClick={handleEmail} disabled={busy} dark full>
+              {busy ? "Please wait…" : mode === 'login' ? 'Sign In' : 'Create Account'}
+            </PillBtn>
+
+            <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+              style={{ background: "none", border: "none", color: C.gold, fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%", textAlign: "center", fontFamily: font.body }}>
+              {mode === 'login' ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+            </button>
           </div>
 
-          <PillBtn onClick={handleEmail} disabled={busy} dark full>
-            {mode === 'login' ? 'Sign In' : 'Create Account'}
-          </PillBtn>
-
-          <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-            style={{ background: "none", border: "none", color: C.gold, fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%", textAlign: "center" }}>
-            {mode === 'login' ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
-          </button>
+          <p style={{ textAlign: "center", fontSize: 11, color: C.muted, marginTop: 16 }}>3 free credits on signup · No card required</p>
         </div>
+      </main>
 
-        <p style={{ textAlign: "center", fontSize: 11, color: C.muted, marginTop: 20 }}>3 free credits on signup · No card required</p>
-      </div>
+      <PublicFooter />
     </div>
   );
 }
