@@ -35,7 +35,7 @@ export function AppShell({ children, user, credits, onSignOut }: {
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.fg, fontFamily: font.body, display: "flex", flexDirection: "column" }}>
-      <header style={{ borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 100, position: "relative" as any }}>
+     <header style={{ borderBottom: `1px solid ${C.border}`, background: C.bg, position: "sticky", top: 0, zIndex: 100 }}>
         <div className="al-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 1rem" }}>
           {/* Logo */}
           <Link href="/generator" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: C.fg }}>
