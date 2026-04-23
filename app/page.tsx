@@ -43,9 +43,6 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-// ── LANDING PAGE SUNO SECTION (add to app/page.tsx) ──
-// Add this section just before the <PublicFooter /> in your landing page:
-//
 <div style={{ background: C.fg, padding: "4rem 1rem", textAlign: "center" }}>
  <div style={{ maxWidth: 600, margin: "0 auto" }}>
   <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.gold, marginBottom: 16 }}>Powered for</div>
