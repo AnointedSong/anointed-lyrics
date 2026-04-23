@@ -45,7 +45,7 @@ export default function LandingPage() {
       </main>
 <div style={{ background: C.fg, padding: "4rem 1rem", textAlign: "center" }}>
  <div style={{ maxWidth: 600, margin: "0 auto" }}>
-  <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.gold, marginBottom: 16 }}>Powered for</div>
+  <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.gold, marginBottom: 16 }}>Craft Your Music</div>
    <h2 style={{ fontFamily: font.display, fontSize: "clamp(24px,4vw,36px)", fontWeight: 400, color: "#fff", marginBottom: 16 }}>
   Generate lyrics. Create music on Suno AI.
    </h2>
