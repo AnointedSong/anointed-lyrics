@@ -13,6 +13,8 @@ const STRUCTURES=["Standard","Short","Epic","Hook-Heavy","Chant-Driven","Freesty
 const TEMPOS=["Slow (70–90 BPM)","Medium (90–110 BPM)","Upbeat (110–130 BPM)","High Energy (130–150 BPM)","Flat (150+ BPM)","AI Decides"];
 const DEFAULTS = { title:'',topic:'',genre:'',mood:'',language:'English',vocalist:'',structure:'Standard',tempo:'AI Decides',auto_cues:true,call_response:false,metadata_header:true,notes:'' };
 
+const SUNO_AFFILIATE = 'https://www.musicapi.ai/suno-api?via=anointed-lyrics';
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(true);
   useEffect(() => {
@@ -107,16 +109,16 @@ export default function GeneratorPage() {
     <AppShell user={user} credits={credits} onSignOut={handleSignOut}>
       <div style={{ maxWidth: 720, margin: "0 auto", padding: isMobile ? "32px 16px 60px" : "48px 24px 80px" }}>
 
-        {/* Hero text */}
+        {/* Hero */}
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.6 }} style={{ marginBottom: isMobile ? 36 : 56 }}>
           <div style={{ fontSize:10, textTransform:"uppercase", letterSpacing:"0.3em", color:C.muted, marginBottom:16 }}>
-            <span style={{ color:C.gold }}>●</span> &nbsp;Lyric Studio for Suno
+            <span style={{ color:C.gold }}>●</span> &nbsp;AI Lyric Studio
           </div>
           <h1 style={{ fontFamily:font.display, fontSize:"clamp(28px,6vw,52px)", fontWeight:400, lineHeight:1.08, letterSpacing:"-0.02em" }}>
             Write songs that <em style={{ color:C.gold, fontStyle:"normal", fontWeight:500 }}>sing</em> themselves.
           </h1>
           <p style={{ marginTop:16, fontSize:"clamp(14px,3vw,17px)", color:C.muted, lineHeight:1.6 }}>
-            Generate fully-structured lyrics with Suno metatags — ready to paste.
+            Generate professional lyrics for AI music generation — structured, formatted, and ready to use.
           </p>
         </motion.div>
 
@@ -145,11 +147,10 @@ export default function GeneratorPage() {
             <Field label="Tempo"><Dropdown value={values.tempo} onChange={(v:string)=>update("tempo",v)} options={TEMPOS} placeholder="Select tempo" /></Field>
           </Row>
 
-          {/* Toggles */}
           <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:"12px" }}>
             <Toggle label="Auto-Cues" desc="Add performance cues e.g. [whispered], [building]" checked={values.auto_cues} onChange={(v:boolean)=>update("auto_cues",v)} />
             <Toggle label="Call & Response" desc="Include [Lead] / [Crowd] call-and-response" checked={values.call_response} onChange={(v:boolean)=>update("call_response",v)} />
-            <Toggle label="Metadata Header" desc="Prepend a [[metadata]] block for Suno context" checked={values.metadata_header} onChange={(v:boolean)=>update("metadata_header",v)} />
+            <Toggle label="Metadata Header" desc="Prepend a [[metadata]] block for context" checked={values.metadata_header} onChange={(v:boolean)=>update("metadata_header",v)} />
           </div>
 
           <Field label="Notes (optional)">
@@ -177,6 +178,8 @@ export default function GeneratorPage() {
         {result && (
           <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
             style={{ marginTop:48, background:C.card, border:`1px solid ${C.border}`, borderRadius:6, overflow:"hidden" }}>
+
+            {/* Result header */}
             <div style={{ padding: isMobile ? "14px 16px" : "16px 24px", borderBottom:`1px solid ${C.borderLight}` }}>
               <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, flexWrap:"wrap" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -189,7 +192,6 @@ export default function GeneratorPage() {
                 {autoSaved && <span style={{ fontSize:11, color:C.success, textTransform:"uppercase", letterSpacing:"0.1em", whiteSpace:"nowrap" }}>✓ Saved</span>}
               </div>
 
-              {/* Action buttons */}
               <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:12 }}>
                 {result.style_prompt && <SmBtn onClick={()=>copy(result.style_prompt,'style')}>{copied==='style'?'✓ Copied':'Copy Style'}</SmBtn>}
                 <SmBtn onClick={()=>copy(result.lyrics,'lyrics')}>{copied==='lyrics'?'✓ Copied':'Copy Lyrics'}</SmBtn>
@@ -198,19 +200,58 @@ export default function GeneratorPage() {
               </div>
             </div>
 
+            {/* Style prompt */}
             {result.style_prompt && (
               <div style={{ padding: isMobile ? "10px 16px" : "12px 24px", borderBottom:`1px solid ${C.borderLight}`, background:"#F7F6F2" }}>
-                <div style={{ fontSize:10, textTransform:"uppercase", letterSpacing:"0.22em", color:C.muted, marginBottom:4 }}>Suno Style Prompt</div>
+                <div style={{ fontSize:10, textTransform:"uppercase", letterSpacing:"0.22em", color:C.muted, marginBottom:4 }}>Style Prompt</div>
                 <div style={{ fontFamily:font.mono, fontSize:12, color:C.fgSoft, wordBreak:"break-word" }}>{result.style_prompt}</div>
               </div>
             )}
 
+            {/* Lyrics */}
             <pre style={{ padding: isMobile ? "24px 16px" : "32px 24px", whiteSpace:"pre-wrap", fontFamily:font.mono, fontSize: isMobile ? 13 : 14, lineHeight:1.9, color:C.fgSoft, margin:0, wordBreak:"break-word", overflowX:"hidden" }}>
               {result.lyrics}
             </pre>
+
+            {/* Suno affiliate banner */}
+            <div style={{ margin: isMobile ? "0 16px 24px" : "0 24px 32px", padding:"20px 24px", background:`linear-gradient(135deg, ${C.fg} 0%, #2a2a28 100%)`, borderRadius:8, display:"flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", justifyContent:"space-between", gap:16 }}>
+              <div>
+                <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:"0.2em", color:C.gold, marginBottom:6 }}>Next Step</div>
+                <div style={{ fontFamily:font.display, fontSize:"clamp(16px,3vw,18px)", color:"#fff", marginBottom:4 }}>
+                  Turn these lyrics into a real song
+                </div>
+                <div style={{ fontSize:13, color:"rgba(255,255,255,.6)", lineHeight:1.5 }}>
+                  Paste your lyrics into Suno AI and generate a professional track in seconds.
+                </div>
+              </div>
+              <a href={SUNO_AFFILIATE} target="_blank" rel="noopener noreferrer"
+                style={{ display:"inline-block", padding:"12px 24px", background:C.gold, color:"#fff", borderRadius:6, fontSize:13, fontWeight:700, textDecoration:"none", whiteSpace:"nowrap", flexShrink:0, textTransform:"uppercase", letterSpacing:"0.15em" }}>
+                Try Suno AI →
+              </a>
+            </div>
+
           </motion.div>
         )}
       </div>
     </AppShell>
   );
 }
+
+// ── LANDING PAGE SUNO SECTION (add to app/page.tsx) ──
+// Add this section just before the <PublicFooter /> in your landing page:
+//
+// <div style={{ background: C.fg, padding: "4rem 1rem", textAlign: "center" }}>
+//   <div style={{ maxWidth: 600, margin: "0 auto" }}>
+//     <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.gold, marginBottom: 16 }}>Powered for</div>
+//     <h2 style={{ fontFamily: font.display, fontSize: "clamp(24px,4vw,36px)", fontWeight: 400, color: "#fff", marginBottom: 16 }}>
+//       Generate lyrics. Create music on Suno AI.
+//     </h2>
+//     <p style={{ color: "rgba(255,255,255,.6)", fontSize: 15, lineHeight: 1.6, marginBottom: 28 }}>
+//       Don't have a Suno AI account yet? Sign up and start turning your lyrics into real songs.
+//     </p>
+//     <a href="https://www.musicapi.ai/suno-api?via=anointed-lyrics" target="_blank" rel="noopener noreferrer"
+//       style={{ display: "inline-block", padding: "14px 32px", background: C.gold, color: "#fff", borderRadius: 6, fontSize: 14, fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.18em" }}>
+//       Get Started with Suno AI →
+//     </a>
+//   </div>
+// </div>

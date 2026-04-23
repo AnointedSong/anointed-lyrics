@@ -43,7 +43,24 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-
+// ── LANDING PAGE SUNO SECTION (add to app/page.tsx) ──
+// Add this section just before the <PublicFooter /> in your landing page:
+//
+<div style={{ background: C.fg, padding: "4rem 1rem", textAlign: "center" }}>
+ <div style={{ maxWidth: 600, margin: "0 auto" }}>
+  <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: C.gold, marginBottom: 16 }}>Powered for</div>
+   <h2 style={{ fontFamily: font.display, fontSize: "clamp(24px,4vw,36px)", fontWeight: 400, color: "#fff", marginBottom: 16 }}>
+  Generate lyrics. Create music on Suno AI.
+   </h2>
+    <p style={{ color: "rgba(255,255,255,.6)", fontSize: 15, lineHeight: 1.6, marginBottom: 28 }}>
+    Don't have a Suno AI account yet? Sign up and start turning your lyrics into real songs.
+    </p>
+  <a href="https://www.musicapi.ai/suno-api?via=anointed-lyrics" target="_blank" rel="noopener noreferrer"
+   style={{ display: "inline-block", padding: "14px 32px", background: C.gold, color: "#fff", borderRadius: 6, fontSize: 14, fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.18em" }}>
+    Get Started with Suno AI →
+  </a>
+   </div>
+</div>
       <PublicFooter />
     </div>
   );
