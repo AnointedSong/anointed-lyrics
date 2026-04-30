@@ -13,3 +13,9 @@ input, select, textarea, button { font-family: 'DM Sans', 'Helvetica Neue', Aria
 img { max-width: 100%; height: auto; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.blog-content h2 { font-family: 'Playfair Display',serif; font-size: 1.4rem; font-weight: 500; color: #1C1B18; margin: 2rem 0 0.75rem; }
+.blog-content p { color: rgba(28,27,24,.78); line-height: 1.8; margin-bottom: 1rem; }
+.blog-content ul, .blog-content ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+.blog-content li { color: rgba(28,27,24,.78); line-height: 1.8; margin-bottom: 0.25rem; }
+.blog-content strong { color: #1C1B18; font-weight: 600; }
+.blog-content a { color: #C6A24B; }

@@ -1,3 +1,7 @@
+Flexi Complete_win_24_0_0_4393.7z
+Flexi V24 Patch.7z
+
+
 -- ═══════════════════════════════════════════════════════
 -- AnointedLyrics v2 — Supabase Schema
 -- Run this in Supabase SQL Editor (in order)
