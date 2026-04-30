@@ -41,10 +41,11 @@ export function AppShell({ children, user, credits, onSignOut }: {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/generator", label: "Generator" },
-    { href: "/archive", label: "Archive" },
-  ];
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/generator", label: "Generator" },
+  { href: "/archive", label: "Archive" },
+  { href: "/blog", label: "Blog" },
+];
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.fg, fontFamily: font.body, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
@@ -58,37 +59,24 @@ export function AppShell({ children, user, credits, onSignOut }: {
               <div style={{ fontFamily: font.display, fontSize: isMobile ? 15 : 18, letterSpacing: "-0.01em", lineHeight: 1 }}>
                 AnointedLyrics<span style={{ color: C.gold }}>.</span>
               </div>
-              {!isMobile && <div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", color: C.muted, marginTop: 2 }}>Suno Lyric Studio</div>}
-            </div>
-          </Link>
-
-          {/* Right side */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-
-            {/* Credits badge — always visible */}
-            <div style={{ padding: "4px 10px", background: C.goldLight, borderRadius: 20, fontSize: 12, fontWeight: 600, color: C.goldDark, fontFamily: font.mono, whiteSpace: "nowrap" }}>
-              {credits} ✦
-            </div>
-
-            {/* Desktop nav — hidden on mobile */}
-            {!isMobile && (
-              <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                {navItems.map(({ href, label }) => {
-                  const active = pathname === href;
-                  return (
-                    <Link key={href} href={href}
-                      style={{ padding: "8px 12px", fontSize: 13, color: active ? C.fg : C.muted, textDecoration: "none", position: "relative", fontWeight: active ? 500 : 400 }}>
-                      {label}
-                      {active && <span style={{ position: "absolute", left: 12, right: 12, bottom: -1, height: 2, background: C.gold, borderRadius: 1 }} />}
-                    </Link>
-                  );
-                })}
-                <button onClick={onSignOut}
-                  style={{ padding: "8px 12px", fontSize: 13, color: C.muted, background: "none", border: "none", cursor: "pointer", fontFamily: font.body }}>
-                  Sign Out
-                </button>
-              </nav>
-            )}
+       {!isMobile && (
+  <nav style={{ display: "flex", alignItems: "center", gap: 0 }}>
+    {navItems.map(({ href, label }) => {
+      const active = pathname === href;
+      return (
+        <Link key={href} href={href}
+          style={{ padding: "8px 8px", fontSize: 12, color: active ? C.fg : C.muted, textDecoration: "none", position: "relative", fontWeight: active ? 500 : 400, whiteSpace: "nowrap" as const }}>
+          {label}
+          {active && <span style={{ position: "absolute", left: 8, right: 8, bottom: -1, height: 2, background: C.gold, borderRadius: 1 }} />}
+        </Link>
+      );
+    })}
+    <button onClick={onSignOut}
+      style={{ padding: "8px 8px", fontSize: 12, color: C.muted, background: "none", border: "none", cursor: "pointer", fontFamily: font.body, whiteSpace: "nowrap" as const }}>
+      Out
+    </button>
+  </nav>
+)}
 
             {/* Hamburger — mobile only */}
             {isMobile && (
@@ -186,6 +174,7 @@ export function LegalLayout({ title, children }: { title: string; children: Reac
             <div style={{ width: 30, height: 30, borderRadius: 6, background: C.fg, color: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>♪</div>
             <div style={{ fontFamily: font.display, fontSize: 16 }}>AnointedLyrics<span style={{ color: C.gold }}>.</span></div>
           </Link>
+<Link href="/blog" style={{ fontSize: 13, color: C.muted, textDecoration: "none" }}>Blog</Link>
           <Link href="/login" style={{ fontSize: 13, color: C.muted, textDecoration: "none" }}>Sign In →</Link>
         </div>
       </header>
