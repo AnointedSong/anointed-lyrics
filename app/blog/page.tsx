@@ -1,4 +1,3 @@
-'use client';
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/posts';
 import { PublicFooter } from '@/lib/components';
@@ -54,9 +53,7 @@ export default function BlogPage() {
             {posts.map(post => (
               <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none", color: C.fg }}>
                 <div style={{ padding: "28px 0", borderBottom: `1px solid ${C.borderLight}`, display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "start" }}
-                  onMouseEnter={(e: any) => e.currentTarget.style.background = C.goldLight}
-                  onMouseLeave={(e: any) => e.currentTarget.style.background = "transparent"}>
-                  <div style={{ padding: "0 8px" }}>
+                 <div style={{ padding: "28px 0", borderBottom: `1px solid ${C.borderLight}`, display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "start" }}>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
                       <span style={{ background: C.goldLight, color: C.gold, fontSize: 10, fontWeight: 700, padding: "2px 10px", borderRadius: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                         {post.category}
