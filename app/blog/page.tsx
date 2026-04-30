@@ -44,27 +44,27 @@ export default function BlogPage() {
               Tips, Tutorials & Updates
             </h1>
             <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.6 }}>
-              Learn how to get the most out of AnointedLyrics and create better songs for Suno AI.
+              Learn how to get the most out of AnointedLyrics and create better songs for AI music generation.
             </p>
           </div>
 
           {/* Posts list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 0, borderTop: `1px solid ${C.border}` }}>
+          <div style={{ borderTop: `1px solid ${C.border}` }}>
             {posts.map(post => (
-              <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none", color: C.fg }}>
-                <div style={{ padding: "28px 0", borderBottom: `1px solid ${C.borderLight}`, display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "start" }}
-                 <div style={{ padding: "28px 0", borderBottom: `1px solid ${C.borderLight}`, display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "start" }}>
+              <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none", color: C.fg, display: "block" }}>
+                <div style={{ padding: "28px 8px", borderBottom: `1px solid ${C.borderLight}`, display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "start" }}>
+                  <div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
-                      <span style={{ background: C.goldLight, color: C.gold, fontSize: 10, fontWeight: 700, padding: "2px 10px", borderRadius: 10, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                      <span style={{ background: C.goldLight, color: C.gold, fontSize: 10, fontWeight: 700, padding: "2px 10px", borderRadius: 10, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
                         {post.category}
                       </span>
                     </div>
-                    <h2 style={{ fontFamily: font.display, fontSize: "clamp(18px,3vw,22px)", fontWeight: 400, marginBottom: 8, lineHeight: 1.3 }}>
+                    <h2 style={{ fontFamily: font.display, fontSize: "clamp(18px,3vw,22px)", fontWeight: 400, marginBottom: 8, lineHeight: 1.3, color: C.fg }}>
                       {post.title}
                     </h2>
                     <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, margin: 0 }}>{post.excerpt}</p>
                   </div>
-                  <div style={{ fontSize: 12, color: C.muted, whiteSpace: "nowrap", padding: "4px 8px", fontFamily: "monospace" }}>
+                  <div style={{ fontSize: 12, color: C.muted, whiteSpace: "nowrap" as const, fontFamily: "monospace" }}>
                     {new Date(post.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </div>
                 </div>
@@ -78,14 +78,3 @@ export default function BlogPage() {
     </div>
   );
 }
-
-// ── BLOG CONTENT STYLES ──
-// Add these to your app/globals.css:
-//
-// /* Blog content styles */
-// .blog-content h2 { font-family: 'Playfair Display',serif; font-size: 1.4rem; font-weight: 500; color: #1C1B18; margin: 2rem 0 0.75rem; }
-// .blog-content p { color: rgba(28,27,24,.78); line-height: 1.8; margin-bottom: 1rem; }
-// .blog-content ul, .blog-content ol { padding-left: 1.5rem; margin-bottom: 1rem; }
-// .blog-content li { color: rgba(28,27,24,.78); line-height: 1.8; margin-bottom: 0.25rem; }
-// .blog-content strong { color: #1C1B18; font-weight: 600; }
-// .blog-content a { color: #C6A24B; }
