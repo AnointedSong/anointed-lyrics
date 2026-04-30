@@ -12,6 +12,7 @@ export default function LandingPage() {
             <div style={{ width: 32, height: 32, borderRadius: 6, background: C.fg, color: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>♪</div>
             <div style={{ fontFamily: font.display, fontSize: "clamp(15px,4vw,18px)", color: C.fg }}>AnointedLyrics<span style={{ color: C.gold }}>.</span></div>
           </div>
+<Link href="/blog" style={{ fontSize: 13, color: C.muted, textDecoration: "none" }}>Blog</Link>
           <Link href="/login" style={{ fontSize: 13, color: C.muted, textDecoration: "none", whiteSpace: "nowrap" }}>Sign In →</Link>
         </div>
       </header>
